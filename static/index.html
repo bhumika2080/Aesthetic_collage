@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aesthetic Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=DM+Sans:wght@400;500;600&family=Homemade+Apple&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4ede2;
+    --bg-deep: #ebe1d1;
+    --card: #fbf8f2;
+    --ink: #2e2420;
+    --ink-soft: #6f6159;
+    --line: #d9cbb8;
+    --accent: #9a4f32;
+    --accent-ink: #fff8f0;
+    --tape: rgba(214, 170, 132, .55);
+    --shadow: 0 1px 2px rgba(60, 40, 25, .08), 0 8px 24px rgba(60, 40, 25, .10);
+    --shadow-lg: 0 2px 4px rgba(60, 40, 25, .10), 0 24px 60px rgba(60, 40, 25, .18);
+    --radius: 14px;
+    --serif: "Cormorant Garamond", "Didot", Georgia, serif;
+    --sans: "DM Sans", -apple-system, system-ui, sans-serif;
+    --hand: "Homemade Apple", "Snell Roundhand", cursive;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #1e1916; --bg-deep: #171310; --card: #29221e; --ink: #f1e7da; --ink-soft: #b3a395;
+      --line: #43382f; --accent: #d98b63; --accent-ink: #1e1916; --tape: rgba(217, 139, 99, .35);
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+      --shadow-lg: 0 2px 4px rgba(0,0,0,.35), 0 24px 60px rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #1e1916; --bg-deep: #171310; --card: #29221e; --ink: #f1e7da; --ink-soft: #b3a395;
+    --line: #43382f; --accent: #d98b63; --accent-ink: #1e1916; --tape: rgba(217, 139, 99, .35);
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+    --shadow-lg: 0 2px 4px rgba(0,0,0,.35), 0 24px 60px rgba(0,0,0,.5);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg);
+    background-image: radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--ink) 7%, transparent) 1px, transparent 0);
+    background-size: 22px 22px;
+    color: var(--ink);
+    font: 15px/1.5 var(--sans);
+    min-height: 100vh;
+  }
+  button, input { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .wrap { max-width: 1320px; margin: 0 auto; padding: 0 28px; }
+  header { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 30px 0 22px; }
+  .brand { font: italic 500 40px/1 var(--serif); letter-spacing: -.01em; margin: 0; }
+  .brand span { color: var(--accent); font-style: normal; }
+  .tag { color: var(--ink-soft); font-size: 13px; }
+
+  main { display: grid; grid-template-columns: 400px 1fr; gap: 28px; align-items: start; }
+  @media (max-width: 980px) { main { grid-template-columns: minmax(0, 1fr); } }
+  main > * { min-width: 0; }
+
+  .panel { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+  .desk { padding: 24px; position: sticky; top: 20px; }
+  @media (max-width: 980px) { .desk { position: static; } }
+  .label { display: block; font: 600 11px/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft); margin: 0 0 10px; }
+  .vibe-input {
+    width: 100%; border: 1px solid var(--line); background: var(--bg); border-radius: 10px;
+    padding: 14px 16px; font: italic 500 24px/1.2 var(--serif);
+  }
+  .vibe-input::placeholder { color: color-mix(in srgb, var(--ink-soft) 70%, transparent); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 24px; }
+  .chip {
+    border: 1px solid var(--line); background: transparent; border-radius: 999px; padding: 5px 11px;
+    font-size: 13px; color: var(--ink-soft); transition: all .15s;
+  }
+  .chip:hover { color: var(--ink); border-color: var(--ink-soft); }
+  .chip.dice { border-style: dashed; }
+
+  .styles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-bottom: 22px; }
+  .style {
+    position: relative; text-align: left; border: 1px solid var(--line); background: var(--bg);
+    border-radius: 10px; padding: 8px; transition: border-color .15s, transform .15s;
+  }
+  .style:hover { transform: translateY(-1px); border-color: var(--ink-soft); }
+  .style[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .style[aria-pressed="true"]::before {
+    content: ""; position: absolute; top: -7px; left: 50%; width: 54px; height: 16px; translate: -50% 0; rotate: -3deg;
+    background: var(--tape); border-radius: 2px;
+  }
+  .thumb {
+    height: 92px; border-radius: 6px; background: var(--bg-deep) center / cover no-repeat; margin-bottom: 8px;
+    display: grid; place-items: center; overflow: hidden;
+  }
+  .thumb.auto { font: italic 500 34px/1 var(--serif); color: var(--accent); }
+  .thumb.all { grid-template-columns: repeat(4, 1fr); gap: 3px; padding: 6px; }
+  .thumb.all i { display: block; height: 100%; width: 100%; border-radius: 3px; background: center / cover no-repeat; }
+  .style b { display: block; font: 600 13px/1.2 var(--sans); }
+  .style small { display: block; color: var(--ink-soft); font-size: 11.5px; line-height: 1.35; margin-top: 2px; }
+
+  .go {
+    width: 100%; border: 0; border-radius: 10px; padding: 15px; background: var(--ink); color: var(--bg);
+    font: 600 15px/1 var(--sans); letter-spacing: .02em; transition: transform .1s, opacity .15s;
+  }
+  .go:hover { transform: translateY(-1px); }
+  .go:disabled { opacity: .5; cursor: progress; transform: none; }
+  .hint { color: var(--ink-soft); font-size: 12px; text-align: center; margin: 10px 0 0; }
+  .error { background: color-mix(in srgb, #c0392b 12%, var(--card)); border: 1px solid color-mix(in srgb, #c0392b 40%, var(--line));
+           color: var(--ink); border-radius: 10px; padding: 10px 12px; font-size: 13px; margin-top: 12px; }
+
+  /* stage */
+  .stage { min-height: 640px; padding: 28px; display: grid; grid-template-columns: minmax(0, 1fr); }
+  .empty { place-self: center; text-align: center; color: var(--ink-soft); max-width: 360px; }
+  .empty .ghost {
+    width: 220px; aspect-ratio: 4/5; margin: 0 auto 22px; border-radius: 6px; border: 1.5px dashed var(--line);
+    display: grid; place-items: center; rotate: -2deg; background: var(--bg);
+    font: 26px/1 var(--hand); color: color-mix(in srgb, var(--ink-soft) 60%, transparent);
+  }
+  .empty h2 { font: italic 500 28px/1.2 var(--serif); color: var(--ink); margin: 0 0 6px; }
+
+  .progress { place-self: center; width: min(520px, 100%); }
+  .progress h2 { font: italic 500 32px/1.15 var(--serif); margin: 0 0 22px; }
+  .steps { list-style: none; margin: 0; padding: 0; }
+  .step { display: grid; grid-template-columns: 26px 1fr; gap: 12px; padding: 0 0 18px; position: relative; }
+  .step:not(:last-child)::after { content: ""; position: absolute; left: 12px; top: 26px; bottom: 2px; width: 1px; background: var(--line); }
+  .dot { width: 25px; height: 25px; border-radius: 50%; border: 1.5px solid var(--line); display: grid; place-items: center; font-size: 12px; background: var(--card); }
+  .step.active .dot { border-color: var(--accent); }
+  .step.active .dot::after { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); animation: pulse 1s ease-in-out infinite; }
+  .step.done .dot { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+  .step.done .dot::after { content: "✓"; }
+  @keyframes pulse { 50% { opacity: .25; scale: .7; } }
+  .step b { font-weight: 600; display: block; padding-top: 2px; }
+  .step.pending b { color: var(--ink-soft); font-weight: 500; }
+  .msgs { margin: 4px 0 0; padding: 0; list-style: none; color: var(--ink-soft); font-size: 13px; }
+  .msgs li { animation: rise .3s ease-out; }
+  @keyframes rise { from { opacity: 0; translate: 0 4px; } }
+  .live-palette { display: flex; gap: 6px; margin-top: 8px; }
+  .live-palette span { width: 26px; height: 26px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(0,0,0,.12); animation: rise .4s ease-out backwards; }
+
+  .result { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 28px; align-items: start; }
+  @media (max-width: 1180px) { .result { grid-template-columns: minmax(0, 1fr); } }
+  .page-wrap { position: relative; display: grid; place-items: center; background: var(--bg-deep); border-radius: 10px; padding: 28px; min-height: 400px; }
+  .page-wrap img { max-width: 100%; max-height: 78vh; display: block; box-shadow: var(--shadow-lg); rotate: -.6deg; transition: opacity .25s; cursor: zoom-in; }
+  .page-wrap.busy img { opacity: .35; }
+  .page-wrap .busy-note { position: absolute; font: italic 500 22px var(--serif); display: none; }
+  .page-wrap.busy .busy-note { display: block; }
+  .versions { display: flex; gap: 8px; margin-top: 12px; overflow-x: auto; padding-bottom: 4px; }
+  .versions button { flex: none; border: 1px solid var(--line); background: var(--card); border-radius: 6px; padding: 3px; width: 58px; }
+  .versions button[aria-current="true"] { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .versions img { width: 100%; aspect-ratio: 4/5; object-fit: cover; display: block; border-radius: 3px; }
+
+  .info h2 { font: italic 500 38px/1.05 var(--serif); margin: 0 0 6px; }
+  .info .sub { color: var(--ink-soft); font: italic 500 18px/1.3 var(--serif); margin: 0 0 18px; }
+  .swatches { display: flex; gap: 6px; margin: 0 0 18px; }
+  .swatch { flex: 1; min-width: 0; height: 44px; border: 0; border-radius: 6px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.1); position: relative; }
+  .swatch span { position: absolute; bottom: -18px; left: 0; right: 0; font-size: 10px; color: var(--ink-soft); text-align: center; }
+  .quote { font: 17px/1.7 var(--hand); color: var(--ink); margin: 30px 0 18px; rotate: -1.5deg; }
+  .word { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; font-size: 13px; color: var(--ink-soft); margin-bottom: 20px; }
+  .word b { font: 600 20px/1.2 var(--serif); color: var(--ink); display: block; }
+  .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 18px; }
+  .btn { border: 1px solid var(--line); background: var(--card); border-radius: 8px; padding: 10px; font-weight: 500; font-size: 13.5px; text-decoration: none; text-align: center; color: var(--ink); }
+  .btn:hover { border-color: var(--ink-soft); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .btn:disabled { opacity: .5; cursor: progress; }
+  .restyle { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
+  details { font-size: 12.5px; color: var(--ink-soft); }
+  summary { cursor: pointer; font-weight: 500; }
+  details ol { padding-left: 18px; margin: 8px 0 0; }
+  details a { color: inherit; }
+
+  /* gallery */
+  .gallery-head { display: flex; align-items: baseline; justify-content: space-between; margin: 46px 0 14px; }
+  .gallery-head h3 { font: italic 500 28px/1 var(--serif); margin: 0; }
+  .gallery { columns: 6 170px; column-gap: 14px; padding-bottom: 60px; }
+  .tile { break-inside: avoid; margin: 0 0 14px; border: 0; padding: 0; background: none; width: 100%; text-align: left; display: block; }
+  .tile img { width: 100%; display: block; border-radius: 4px; box-shadow: var(--shadow); transition: transform .2s; }
+  .tile:hover img { transform: translateY(-2px) rotate(-.6deg); }
+  .tile span { display: block; font-size: 12px; color: var(--ink-soft); padding: 6px 2px 0; }
+
+  .lightbox { position: fixed; inset: 0; background: rgba(20, 14, 10, .82); display: none; place-items: center; z-index: 10; padding: 24px; cursor: zoom-out; }
+  .lightbox.open { display: grid; }
+  .lightbox img { max-width: 100%; max-height: 88vh; box-shadow: var(--shadow-lg); }
+  .lightbox a { position: absolute; bottom: 22px; left: 50%; translate: -50% 0; color: #fff; font-size: 14px; }
+
+  .toast { position: fixed; bottom: 22px; left: 50%; translate: -50% 20px; background: var(--ink); color: var(--bg); padding: 8px 14px; border-radius: 999px; font-size: 13px; opacity: 0; transition: all .2s; pointer-events: none; }
+  .toast.show { opacity: 1; translate: -50% 0; }
+
+  @media (max-width: 600px) {
+    .wrap { padding: 0 16px; }
+    header { flex-direction: column; gap: 4px; }
+    .desk, .stage { padding: 18px; }
+    .stage { min-height: 420px; }
+    .page-wrap { padding: 14px; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1 class="brand">aesthetic <span>studio</span></h1>
+    <div class="tag">type a vibe → Tarka art-directs → a scrapbook page appears</div>
+  </header>
+
+  <main>
+    <form class="panel desk" id="form">
+      <label class="label" for="vibe">the vibe</label>
+      <input class="vibe-input" id="vibe" autocomplete="off" maxlength="120" placeholder="rainy bookshop afternoon">
+      <div class="chips" id="chips"></div>
+
+      <span class="label">format</span>
+      <div class="styles" id="styles"></div>
+
+      <button class="go" id="go" type="submit">make my page ✦</button>
+      <p class="hint">about 30 seconds · photos from Openverse</p>
+      <div class="error" id="error" hidden></div>
+    </form>
+
+    <section class="panel stage" id="stage" aria-live="polite"></section>
+  </main>
+
+  <div class="gallery-head">
+    <h3>your pages</h3>
+    <span class="tag" id="gallery-count"></span>
+  </div>
+  <div class="gallery" id="gallery"></div>
+</div>
+
+<div class="lightbox" id="lightbox"><img alt=""><a download>download</a></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const STYLES = [
+  { id: "auto", name: "Let Tarka pick", desc: "it chooses what suits the vibe" },
+  { id: "journal", name: "Junk journal", desc: "handwriting, torn paper, clippings, clock" },
+  { id: "layered", name: "Layered botanical", desc: "stacked papers, paper flowers, butterflies" },
+  { id: "heritage", name: "Heritage lace", desc: "lace border, roses, ribbon, monochrome" },
+  { id: "grid", name: "Clean grid", desc: "modern bento mood board" },
+  { id: "all", name: "All four", desc: "one page in every style" },
+];
+const RENDERABLE = ["journal", "layered", "heritage", "grid"];
+const VIBES = ["cozy autumn", "dark academia", "cottagecore", "coastal summer", "parisian café",
+  "moody winter cabin", "golden hour picnic", "y2k dreamy", "rainy city night", "lavender fields"];
+const STEPS = [
+  { id: "plan", name: "Art direction", note: "Tarka writes the title, palette and search terms" },
+  { id: "search", name: "Finding photos", note: "searching Openverse" },
+  { id: "curate", name: "Curating", note: "Tarka looks at every photo and picks a cohesive set" },
+  { id: "compose", name: "Composing the page", note: "paper, tape, flowers, grain…" },
+];
+
+const $ = (s, el = document) => el.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const state = { style: "auto", job: null, current: 0, poll: null };
+
+try { state.style = localStorage.getItem("style") || "auto"; } catch {}
+
+function toast(msg) {
+  const t = $("#toast"); t.textContent = msg; t.classList.add("show");
+  clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove("show"), 1600);
+}
+function showError(msg) { const e = $("#error"); e.hidden = !msg; e.textContent = msg || ""; }
+
+/* ---------- controls ---------- */
+function renderChips() {
+  $("#chips").innerHTML = VIBES.map(v => `<button type="button" class="chip">${esc(v)}</button>`).join("")
+    + `<button type="button" class="chip dice" data-dice>surprise me</button>`;
+  $("#chips").onclick = e => {
+    const b = e.target.closest(".chip"); if (!b) return;
+    $("#vibe").value = b.dataset.dice !== undefined ? VIBES[Math.floor(Math.random() * VIBES.length)] : b.textContent;
+    $("#vibe").focus();
+  };
+}
+function thumbFor(id) {
+  if (id === "auto") return `<div class="thumb auto">✦</div>`;
+  if (id === "all") return `<div class="thumb all">${RENDERABLE.map(s => `<i style="background-image:url(/static/previews/${s}.jpg)"></i>`).join("")}</div>`;
+  return `<div class="thumb" style="background-image:url(/static/previews/${id}.jpg)"></div>`;
+}
+function renderStyles() {
+  $("#styles").innerHTML = STYLES.map(s => `
+    <button type="button" class="style" data-id="${s.id}" aria-pressed="${s.id === state.style}">
+      ${thumbFor(s.id)}<b>${esc(s.name)}</b><small>${esc(s.desc)}</small>
+    </button>`).join("");
+  $("#styles").onclick = e => {
+    const b = e.target.closest(".style"); if (!b) return;
+    state.style = b.dataset.id;
+    try { localStorage.setItem("style", state.style); } catch {}
+    renderStyles();
+  };
+}
+
+/* ---------- stage views ---------- */
+function viewEmpty() {
+  $("#stage").innerHTML = `
+    <div class="empty">
+      <div class="ghost">your page</div>
+      <h2>Start with a feeling</h2>
+      <p>Type a vibe, choose a format, and Tarka will art-direct a scrapbook page from real photos.</p>
+    </div>`;
+}
+
+function viewProgress(job) {
+  const order = STEPS.map(s => s.id);
+  const at = job.stage === "done" ? order.length : order.indexOf(job.stage);
+  const palette = (job.log.find(l => l.msg.startsWith("palette:"))?.msg.match(/#[0-9a-f]{6}/gi)) || [];
+  $("#stage").innerHTML = `
+    <div class="progress">
+      <h2>“${esc(job.vibe)}”</h2>
+      <ol class="steps">${STEPS.map((s, i) => {
+        const cls = i < at ? "done" : i === at ? "active" : "pending";
+        const msgs = job.log.filter(l => l.stage === s.id && !l.msg.startsWith("palette:")).map(l => `<li>${esc(l.msg)}</li>`).join("");
+        return `<li class="step ${cls}"><span class="dot"></span><div><b>${s.name}</b>
+          <ul class="msgs">${msgs || (cls === "active" ? `<li>${s.note}…</li>` : "")}</ul>
+          ${s.id === "plan" && palette.length ? `<div class="live-palette">${palette.map((c, k) => `<span style="background:${c};animation-delay:${k * 80}ms"></span>`).join("")}</div>` : ""}
+        </div></li>`;
+      }).join("")}</ol>
+    </div>`;
+}
+
+function viewResult(job) {
+  const r = job.results[state.current] || job.results[0];
+  const p = job.plan || {};
+  $("#stage").innerHTML = `
+    <div class="result">
+      <div>
+        <div class="page-wrap" id="page-wrap">
+          <img src="${r.url}" alt="${esc(p.title)} — ${esc(r.style)} page" id="page-img">
+          <span class="busy-note">composing…</span>
+        </div>
+        ${job.results.length > 1 ? `<div class="versions">${job.results.map((x, i) => `
+          <button type="button" data-i="${i}" aria-current="${i === state.current}" title="${x.style}"><img src="${x.url}" alt="${x.style}"></button>`).join("")}</div>` : ""}
+      </div>
+      <aside class="info">
+        <span class="label">${esc(r.style)} page</span>
+        <h2>${esc(p.title)}</h2>
+        <p class="sub">${esc(p.subtitle)}</p>
+        <div class="swatches">${(p.palette || []).map(c => `<button type="button" class="swatch" style="background:${c}" data-hex="${c}" title="copy ${c}"><span>${c.toLowerCase()}</span></button>`).join("")}</div>
+        ${p.quote ? `<p class="quote">${esc(p.quote)}</p>` : ""}
+        ${p.word ? `<div class="word"><b>${esc(p.word.word)}</b>(${esc(p.word.pos)}) ${esc(p.word.definition)}</div>` : ""}
+        <div class="actions">
+          <a class="btn primary" href="${r.url}" download>Download</a>
+          <button type="button" class="btn" data-restyle="${r.style}">Shuffle layout</button>
+        </div>
+        <span class="label">same photos, another format</span>
+        <div class="restyle">${RENDERABLE.filter(s => s !== r.style).map(s => `<button type="button" class="chip" data-restyle="${s}">${s}</button>`).join("")}</div>
+        <details><summary>Photo credits (${r.credits.length})</summary><ol>${r.credits.map(c =>
+          `<li><a href="${esc(c.link)}" target="_blank" rel="noopener">${esc(c.title)}</a> by ${esc(c.creator)} · ${esc(c.license)}</li>`).join("")}</ol></details>
+      </aside>
+    </div>`;
+}
+
+$("#stage").addEventListener("click", async e => {
+  const v = e.target.closest(".versions button");
+  if (v) { state.current = +v.dataset.i; return viewResult(state.job); }
+  const sw = e.target.closest(".swatch");
+  if (sw) { try { await navigator.clipboard.writeText(sw.dataset.hex); toast(`copied ${sw.dataset.hex}`); } catch {} return; }
+  if (e.target.id === "page-img") return openLightbox(e.target.src);
+  const rs = e.target.closest("[data-restyle]");
+  if (rs) restyle(rs.dataset.restyle);
+});
+
+async function restyle(style) {
+  const job = state.job; if (!job) return;
+  $("#page-wrap")?.classList.add("busy");
+  document.querySelectorAll("[data-restyle]").forEach(b => b.disabled = true);
+  try {
+    const res = await fetch(`/api/jobs/${job.id}/render`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ style }) });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "render failed");
+    job.results.push(data);
+    state.current = job.results.length - 1;
+    viewResult(job);
+    loadGallery();
+  } catch (err) {
+    toast(err.message);
+    $("#page-wrap")?.classList.remove("busy");
+    document.querySelectorAll("[data-restyle]").forEach(b => b.disabled = false);
+  }
+}
+
+/* ---------- generate ---------- */
+$("#form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const vibe = $("#vibe").value.trim();
+  if (!vibe) { $("#vibe").focus(); return showError("Type a vibe first — or tap one of the suggestions."); }
+  showError("");
+  $("#go").disabled = true; $("#go").textContent = "making…";
+  try {
+    const res = await fetch("/api/generate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ vibe, style: state.style }) });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+    state.current = 0;
+    history.replaceState(null, "", `#job=${data.id}`);
+    poll(data.id);
+  } catch (err) { finish(); showError(err.message || "Couldn't reach the local server — is app.py still running?"); }
+});
+
+function finish() { $("#go").disabled = false; $("#go").textContent = "make my page ✦"; }
+
+async function poll(id) {
+  clearTimeout(state.poll);
+  try {
+    const res = await fetch(`/api/jobs/${id}`);
+    if (res.status === 404) { finish(); history.replaceState(null, "", location.pathname); return viewEmpty(); }
+    const job = await res.json();
+    state.job = job;
+    if (job.status === "error") { finish(); viewEmpty(); return showError(job.error); }
+    if (job.status === "done") { finish(); viewResult(job); loadGallery(); return; }
+    viewProgress(job);
+  } catch { /* transient — keep polling */ }
+  state.poll = setTimeout(() => poll(id), 700);
+}
+
+/* ---------- gallery + lightbox ---------- */
+async function loadGallery() {
+  try {
+    const items = await (await fetch("/api/gallery")).json();
+    $("#gallery-count").textContent = items.length ? `${items.length} most recent` : "";
+    $("#gallery").innerHTML = items.length ? items.map(it => `
+      <button type="button" class="tile" data-src="${it.url}"><img src="${it.url}" alt="${esc(it.vibe)}" loading="lazy">
+      <span>${esc(it.vibe)} · ${esc(it.style)}</span></button>`).join("")
+      : `<p class="tag">Pages you make will collect here.</p>`;
+  } catch {}
+}
+$("#gallery").addEventListener("click", e => { const t = e.target.closest(".tile"); if (t) openLightbox(t.dataset.src); });
+function openLightbox(src) {
+  const lb = $("#lightbox"); $("img", lb).src = src; $("a", lb).href = src; lb.classList.add("open");
+}
+$("#lightbox").addEventListener("click", e => { if (e.target.tagName !== "A") e.currentTarget.classList.remove("open"); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") $("#lightbox").classList.remove("open"); });
+
+renderChips(); renderStyles(); viewEmpty(); loadGallery();
+const resume = location.hash.match(/job=([0-9a-f]+)/);
+if (resume) poll(resume[1]);
+</script>
+</body>
+</html>
